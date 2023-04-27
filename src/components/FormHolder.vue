@@ -4,19 +4,26 @@
       <h1>Invite User</h1>
       <nav class="main-nav">
         <ul class="main-nav__links">
-          <li class="links-item">
-            <a href="#" class="active"><span>1</span> Main Info</a>
-          </li>
-          <li class="links-item">
-            <a href="#"><span>2</span> Available Locations</a>
-          </li>
-          <li class="links-item">
-            <a href="#"><span>3</span> Roles</a>
+          <li
+            class="links-item"
+            v-for="(tab, index) in tabs"
+            :key="tab.alias"
+            @click.prevent="handleTabClick(index)"
+          >
+            <a
+              href="#"
+              :class="{'active': index === currentTabIndex, 'checked': currentTabIndex > index}"
+            > <span v-if="currentTabIndex > index">
+              <img src="@/assets/check.svg" alt="Done icon" style="height: 6px;">
+            </span>
+              <span v-else>{{ index + 1 }}</span>
+              {{ tab.label }}
+            </a>
           </li>
         </ul>
       </nav>
     </div>
-    <div class="main-form__content">
+    <div class="main-form__content" v-show="currentTabIndex === 0">
       <div class="main-form__content--row">
         <div class="input-field">
           <label for="first_name">First Name</label>
@@ -54,7 +61,7 @@
         </div>
       </div>
     </div>
-    <div class="main-form__locations">
+    <div class="main-form__locations" v-show="currentTabIndex === 1">
       <div class="main-form__locations--row">
         <div class="input-field">
           <label for="main_location">Main Location <mark>*</mark></label>
@@ -136,7 +143,7 @@
         </div>
       </div>
     </div>
-    <div class="main-form__roles">
+    <div class="main-form__roles" v-show="currentTabIndex === 2">
       <div class="table_wrapper">
         <table>
           <colgroup>
@@ -154,11 +161,11 @@
               <th>Create</th>
               <th>Approve</th>
               <th>Pay</th>
-              <th style="display: flex; aligne-items: center; gap: 1rem">Management:
+              <th style="display: flex; gap: 1rem">Management:
                 <img
                   src="@/assets/info.svg"
                   alt="Warning logo"
-                  style="height: 20px; opacity: 0.5; margin-left: -7rem;"></th>
+                  style="height: 20px; opacity: 0.5; margin-right: auto;"></th>
             </tr>
           </thead>
           <tbody>
@@ -253,7 +260,7 @@
       </div>
       <div class="main-form__roles--info">
         <div class="info-icon">
-          <img src="@/assets/info.svg" alt="Warning logo" style="height: 20px; opacity: 0.5;">
+          <img src="@/assets/info.svg" alt="Warning logo">
         </div>
         <div class="info-text">
           The user becomes a <a href="#">Power user</a> if at least ONE of the following roles is selected:
@@ -281,11 +288,33 @@
 </template>
 
 <script>
+import { ref } from 'vue';
 export default {
   setup () {
+    const tabs = [
+      {
+        alias: 'main',
+        label: 'Main Info',
+      },
+      {
+        alias: 'location',
+        label: 'Available Locations',
+      },
+      {
+        alias: 'roles',
+        label: 'Roles',
+      }
+    ];
+    const currentTabIndex = ref(0);
 
-
-    return {}
+    const handleTabClick = (goToIndex) => {
+      currentTabIndex.value = goToIndex;
+    }
+    return {
+      tabs,
+      currentTabIndex,
+      handleTabClick
+    }
   }
 }
 </script>

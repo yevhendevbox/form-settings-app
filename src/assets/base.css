@@ -130,8 +130,8 @@ tr td:nth-child(5) {
   margin: 0 auto;
 }
 [type="checkbox"] {
-  width: 18px;
-  height: 18px;
+  min-width: 18px;
+  min-height: 18px;
   border-radius: 4px;
 }
 [type="checkbox"]:hover,
