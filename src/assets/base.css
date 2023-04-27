@@ -78,21 +78,51 @@ table {
   border-collapse: collapse;
 }
 th {
-  padding: .8rem 0;
+  padding: .8rem;
   font-size: var(--fz-md);
   font-weight: var(--bold);
   color: var(--gray);
 }
 th:first-child {
   text-align: left;
+  padding-left: 0;
+}
+th:last-child {
+  padding-left: 3rem;
+}
+th:nth-child(5) {
+  padding-right: 3rem;
 }
 td {
   padding: .8rem 0;
+}
+td [type="checkbox"] {
+  display: block;
+  margin: 0 auto;
 }
 tr td:first-child {
   font-size: var(--fz-md);
   font-weight: var(--regular);
   color: var(--darken);
+}
+tr td:last-child {
+  padding-left: 3rem;
+}
+tr td:last-child [type="checkbox"] {
+  margin: 0;
+}
+tr td:last-child label {
+  padding-top: 0;
+  gap: 1.6rem;
+}
+tr td:last-child span {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.7rem;
+}
+tr td:nth-child(5) {
+  padding-right: 3rem;
 }
 .container {
   width: 98%;
