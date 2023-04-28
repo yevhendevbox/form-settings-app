@@ -6,7 +6,7 @@
           <input
             type="text"
             name="first_name"
-            v-model="userInfo.firstName"
+            v-model.lazy="userInfo.firstName"
             placeholder="John"
           >
         </div>
@@ -15,7 +15,7 @@
           <input
             type="text"
             name="last_name"
-            v-model="userInfo.lastName"
+            v-model.lazy="userInfo.lastName"
             placeholder="Doe"
           >
         </div>
@@ -26,7 +26,7 @@
           <input
             type="email"
             name="email"
-            v-model="userInfo.email"
+            v-model.lazy="userInfo.email"
             placeholder="example@email.com"
           >
         </div>
@@ -35,7 +35,7 @@
           <input
             type="tel"
             name="phone"
-            v-model="userInfo.phone"
+            v-model.lazy="userInfo.phone"
             placeholder="099 999 99 99"
           >
         </div>
@@ -46,7 +46,7 @@
           <input
             type="text"
             name="position"
-            v-model="userInfo.position"
+            v-model.lazy="userInfo.position"
             placeholder="your position here"
           >
         </div>
@@ -67,6 +67,7 @@
 
 <script>
 import { watch, reactive } from 'vue';
+import { useUserStore } from '@/stores/UserStore';
 
 export default {
   name: 'MainInfoTab',
@@ -94,6 +95,8 @@ export default {
       { alias: 'data_art', value: 'Data Art' },
      ]
 
+     const { updateData } = useUserStore();
+
     const setAllCompaniesToUserInfo = () => {
       userInfo.companies = companiesOptions.map(company => company.value);
     }
@@ -102,11 +105,16 @@ export default {
       () => props.isAllCompaniesChecked,
       () => setAllCompaniesToUserInfo()
     );
+    watch(
+      () => ({ ... userInfo }),
+      () => updateData({ tab: 'userInfo', data: { ... userInfo} })
+    );
 
     return {
       userInfo,
       companiesOptions,
-      setAllCompaniesToUserInfo
+      setAllCompaniesToUserInfo,
+      updateData,
     }
   }
 }
