@@ -67,13 +67,23 @@ ul {
   list-style: none;
   padding: 0;
 }
+img {
+  width: 100%;
+}
+.container {
+  width: 98%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
 mark {
   background-color: transparent;
   color: red;
 }
-img {
-  width: 100%;
+select:disabled {
+  background-color: var(--light);
 }
+
 table {
   border-collapse: collapse;
 }
@@ -123,11 +133,6 @@ tr td:last-child span {
 }
 tr td:nth-child(5) {
   padding-right: 3rem;
-}
-.container {
-  width: 98%;
-  max-width: 1200px;
-  margin: 0 auto;
 }
 [type="checkbox"] {
   min-width: 18px;
