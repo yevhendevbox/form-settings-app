@@ -125,7 +125,7 @@ export default {
       handleOnSumbit,
       isAllCompanies,
       mainData,
-      isInputsDisabled
+      isInputsDisabled,
     }
   }
 }

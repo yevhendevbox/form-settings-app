@@ -312,7 +312,9 @@
               @click="checkAllProperties"
             >
           <span>Admin (Full access)
-          <img src="@/assets/images/warn.svg" alt="Warning icon" style="height: 16px; width: 16px;"></span>
+          <img src="@/assets/images/warn.svg" alt="Warning icon" style="height: 16px; width: 16px;"
+            title="Warning! User will have every single Role"
+          ></span>
         </label></td>
         </tr>
       </tbody>
@@ -377,7 +379,6 @@ export default {
     watch(
       () => ({ ... rolesInfo }),
       () => {
-        console.log('i am from watch');
         userStore.updateData({ tab: 'rolesInfo', data: { ... rolesInfo} });
         userStore.updateLocalStorage();
       }

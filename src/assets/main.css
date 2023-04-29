@@ -274,6 +274,13 @@ input:checked + .slider:before {
   border-radius: 50%;
 }
 
+.error {
+  border-color: red !important;
+}
+.invalid {
+  color: red !important;
+}
+
 /* ============================= =================================
                           Media queries styles
 ============================= ================================= */
