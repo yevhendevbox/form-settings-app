@@ -143,3 +143,7 @@ tr td:nth-child(5) {
 .checkbox-label:hover {
   cursor: pointer;
 }
+input:disabled, select:disabled {
+  background-color: var(--gray);
+  opacity: .4;
+}

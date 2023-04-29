@@ -36,7 +36,7 @@
         <div class="footer-actions__toggle" v-show="currentTabIndex === 0">
           <div class="toggler">
             <label class="switch">
-            <input type="checkbox" v-model="isAllCompanies">
+            <input type="checkbox" v-model="isAllCompanies" :disabled="isInputsDisabled">
             <span class="slider round"></span></label>
           </div>
           <p class="toggler-label">Active in all companies</p>
@@ -62,6 +62,7 @@ import MainInfoTab from '@/components/MainInfoTab.vue';
 import LocationsTab from '@/components/LocationsTab.vue';
 import RolesTab from '@/components/RolesTab.vue';
 import { useUserStore } from '@/stores/UserStore';
+import { storeToRefs } from 'pinia';
 
 export default {
   components: {
@@ -87,7 +88,8 @@ export default {
     let isAllCompanies = ref();
     const currentTabIndex = ref(0);
     let mainData = {};
-    const { updateCurrentTab, updateLocalStorage, submitDataToServer } = useUserStore();
+    const userStore = useUserStore();
+    const { isInputsDisabled } = storeToRefs(userStore);
 
     const localData = JSON.parse(localStorage.getItem('user-settings'));
     if (localData) {
@@ -96,18 +98,18 @@ export default {
 
     const handleTabClick = (goToIndex) => {
       currentTabIndex.value = goToIndex;
-      updateCurrentTab(currentTabIndex.value);
-      updateLocalStorage();
+      userStore.updateCurrentTab(currentTabIndex.value);
+      userStore.updateLocalStorage();
     }
     const handleOnSumbit = () => {
       if (currentTabIndex.value === 2) {
-        submitDataToServer();
+        userStore.submitDataToServer();
         return;
       };
 
       currentTabIndex.value++;
-      updateCurrentTab(currentTabIndex.value);
-      updateLocalStorage();
+      userStore.updateCurrentTab(currentTabIndex.value);
+      userStore.updateLocalStorage();
     }
 
     onMounted(() => {
@@ -122,7 +124,8 @@ export default {
       handleTabClick,
       handleOnSumbit,
       isAllCompanies,
-      mainData
+      mainData,
+      isInputsDisabled
     }
   }
 }

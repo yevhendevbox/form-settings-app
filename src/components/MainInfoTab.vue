@@ -8,6 +8,7 @@
             name="first_name"
             v-model.lazy="userInfo.firstName"
             placeholder="John"
+            :disabled="isInputsDisabled"
           >
         </div>
         <div class="input-field">
@@ -17,6 +18,7 @@
             name="last_name"
             v-model.lazy="userInfo.lastName"
             placeholder="Doe"
+            :disabled="isInputsDisabled"
           >
         </div>
       </div>
@@ -28,6 +30,7 @@
             name="email"
             v-model.lazy="userInfo.email"
             placeholder="example@email.com"
+            :disabled="isInputsDisabled"
           >
         </div>
         <div class="input-field">
@@ -37,6 +40,7 @@
             name="phone"
             v-model.lazy="userInfo.phone"
             placeholder="099 999 99 99"
+            :disabled="isInputsDisabled"
           >
         </div>
       </div>
@@ -48,11 +52,13 @@
             name="position"
             v-model.lazy="userInfo.position"
             placeholder="your position here"
+            :disabled="isInputsDisabled"
           >
         </div>
         <div class="input-field">
           <label for="available">Available in company</label>
-          <select name="available" v-model="userInfo.selectedCompany" :disabled="isAllCompaniesChecked">
+          <select name="available" v-model="userInfo.selectedCompany"
+          :disabled="isAllCompaniesChecked || isInputsDisabled">
             <option
                 v-for="company in companiesOptions"
                 :key="company.alias"
@@ -68,6 +74,7 @@
 <script>
 import { watch, reactive, onMounted, ref } from 'vue';
 import { useUserStore } from '@/stores/UserStore';
+import { storeToRefs } from 'pinia';
 
 export default {
   name: 'MainInfoTab',
@@ -102,13 +109,15 @@ export default {
       { alias: '', value: '-- Please choose a company --' },
      ]
 
-    const { updateData, updateLocalStorage } = useUserStore();
+     const userStore = useUserStore();
+    const { isInputsDisabled } = storeToRefs(userStore);
 
     const setAllCompaniesToUserInfo = () => {
       isAllCompaniesSelected.value = !isAllCompaniesSelected.value;
       if (isAllCompaniesSelected.value) {
         userInfo.selectedCompany = '';
-        userInfo.companies = companiesOptions.map(company => company.value);
+        const companies = companiesOptions.filter(company => company.alias);
+        userInfo.companies = companies.map(company => company.value);
         return;
       }
       userInfo.companies = [];
@@ -124,7 +133,7 @@ export default {
         userInfo.position = position;
         userInfo.companies = companies;
         userInfo.selectedCompany = selectedCompany;
-        updateData({ tab: 'userInfo', data: { ... userInfo} });
+        userStore.updateData({ tab: 'userInfo', data: { ... userInfo} });
       }
     });
 
@@ -135,8 +144,8 @@ export default {
     watch(
       () => ({ ... userInfo }),
       () => {
-        updateData({ tab: 'userInfo', data: { ... userInfo} });
-        updateLocalStorage();
+        userStore.updateData({ tab: 'userInfo', data: { ... userInfo} });
+        userStore.updateLocalStorage();
       }
     );
 
@@ -145,7 +154,7 @@ export default {
       companiesOptions,
       setAllCompaniesToUserInfo,
       isAllCompaniesSelected,
-      updateData,
+      isInputsDisabled,
     }
   }
 }

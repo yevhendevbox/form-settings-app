@@ -11,8 +11,8 @@ export const handleCheckAll = (inputFlag, atr, dataCollection, key) => {
   if (!inputFlag.value) {
     checkboxes.forEach(box => {
       box.checked = false;
-      dataCollection[key] = [];
     });
+    dataCollection[key] = [];
   }
 }
 

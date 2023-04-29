@@ -17,7 +17,6 @@ export const useUserStore = defineStore('userStore', {
       this.data[tabInfo.tab] = tabInfo.data;
     },
     updateCurrentTab(position) {
-      console.log(position);
       this.data.currentTab = position;
     },
     updateLocalStorage() {
