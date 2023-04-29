@@ -52,13 +52,13 @@
         </div>
         <div class="input-field">
           <label for="available">Available in company</label>
-          <select name="available" v-model="userInfo.companies" :disabled="isAllCompaniesChecked">
+          <select name="available" v-model="userInfo.selectedCompany" :disabled="isAllCompaniesChecked">
             <option
                 v-for="company in companiesOptions"
                 :key="company.alias"
                 :value="company.alias"
+                :selected="userInfo.selectedCompany"
             >{{ company.value }}</option>
-            <option value="" disabled>-- Please choose a company -- </option>
           </select>
         </div>
       </div>
@@ -66,7 +66,7 @@
 </template>
 
 <script>
-import { watch, reactive } from 'vue';
+import { watch, reactive, onMounted, ref } from 'vue';
 import { useUserStore } from '@/stores/UserStore';
 
 export default {
@@ -76,30 +76,57 @@ export default {
       type: Boolean,
       required: true,
       default: false,
-    }
+    },
+    savedData: {
+      type: Object,
+      required: false
+    },
   },
   setup (props) {
-    const userInfo = reactive({
+    let userInfo = reactive({
       firstName: '',
       lastName: '',
       email: '',
       phone: '',
       position: '',
+      selectedCompany: '',
       companies: [],
     });
+    const isAllCompaniesSelected = ref(false);
 
     const companiesOptions = [
       { alias: 'precoro', value: 'Precoro' },
       { alias: 'soft_serve', value: 'SoftServe' },
       { alias: 'epam', value: 'EPAM' },
       { alias: 'data_art', value: 'Data Art' },
+      { alias: '', value: '-- Please choose a company --' },
      ]
 
-     const { updateData } = useUserStore();
+    const { updateData, updateLocalStorage } = useUserStore();
 
     const setAllCompaniesToUserInfo = () => {
-      userInfo.companies = companiesOptions.map(company => company.value);
+      isAllCompaniesSelected.value = !isAllCompaniesSelected.value;
+      if (isAllCompaniesSelected.value) {
+        userInfo.selectedCompany = '';
+        userInfo.companies = companiesOptions.map(company => company.value);
+        return;
+      }
+      userInfo.companies = [];
     }
+
+    onMounted(() => {
+      if (props.savedData) {
+        const { firstName, lastName, email, phone, position, companies, selectedCompany } = props.savedData;
+        userInfo.firstName = firstName;
+        userInfo.lastName = lastName;
+        userInfo.email = email;
+        userInfo.phone = phone;
+        userInfo.position = position;
+        userInfo.companies = companies;
+        userInfo.selectedCompany = selectedCompany;
+        updateData({ tab: 'userInfo', data: { ... userInfo} });
+      }
+    });
 
     watch(
       () => props.isAllCompaniesChecked,
@@ -107,13 +134,17 @@ export default {
     );
     watch(
       () => ({ ... userInfo }),
-      () => updateData({ tab: 'userInfo', data: { ... userInfo} })
+      () => {
+        updateData({ tab: 'userInfo', data: { ... userInfo} });
+        updateLocalStorage();
+      }
     );
 
     return {
       userInfo,
       companiesOptions,
       setAllCompaniesToUserInfo,
+      isAllCompaniesSelected,
       updateData,
     }
   }

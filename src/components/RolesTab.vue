@@ -186,8 +186,9 @@
 </template>
 
 <script>
-import { reactive, ref } from 'vue';
+import { reactive, ref, watch } from 'vue';
 import { handleCheckAll, handleAdminCheckAll } from '@/helpers/checkAllFunc.js';
+import { useUserStore } from '@/stores/UserStore';
 
 export default {
   name: 'RolesTab',
@@ -206,12 +207,35 @@ export default {
     const isManagementAllChecked = ref(false);
     const isAdmin = ref(false);
 
+    const { updateData, updateLocalStorage } = useUserStore();
+
+    const localData = JSON.parse(localStorage.getItem('user-settings'));
+    if (localData) {
+      const { only_view, create, approve, pay, management } = localData.rolesInfo;
+      rolesInfo.only_view = only_view;
+      rolesInfo.create = create;
+      rolesInfo.approve = approve;
+      rolesInfo.pay = pay;
+      rolesInfo.management = management;
+      updateData({ tab: 'rolesInfo', data: { ... rolesInfo} });
+    }
+
     const checkAllViewOnly = () => handleCheckAll(isViewOnlyAllChecked, 'data-only_view', rolesInfo, 'only_view');
     const checkAllCreate = () => handleCheckAll(isCreateAllChecked, 'data-create', rolesInfo, 'create');
     const checkAllApprove = () => handleCheckAll(isCreateAllChecked, 'data-approve', rolesInfo, 'approve');
     const checkAllPay = () => handleCheckAll(isCreateAllChecked, 'data-pay', rolesInfo, 'pay');
     const checkAllManagement = () => handleCheckAll(isManagementAllChecked, 'data-management', rolesInfo, 'management');
     const checkAllProperties = () => handleAdminCheckAll(isAdmin, rolesInfo);
+
+    watch(
+      () => ({ ... rolesInfo }),
+      () => {
+        console.log('i am from watch');
+        updateData({ tab: 'rolesInfo', data: { ... rolesInfo} });
+        updateLocalStorage();
+      }
+    );
+
     return {
       rolesInfo,
       isViewOnlyAllChecked,

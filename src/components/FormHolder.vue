@@ -23,8 +23,13 @@
         </ul>
       </nav>
     </div>
-      <main-info-tab v-show="currentTabIndex === 0" :isAllCompaniesChecked="isAllCompanies"/>
-      <locations-tab v-show="currentTabIndex === 1"/>
+      <main-info-tab
+        v-show="currentTabIndex === 0"
+        :isAllCompaniesChecked="isAllCompanies"
+        :savedData="mainData.userInfo"/>
+      <locations-tab
+        v-show="currentTabIndex === 1"
+        />
       <roles-tab v-show="currentTabIndex === 2"/>
     <div class="main-form__footer">
       <div class="footer-actions">
@@ -51,11 +56,12 @@
 </template>
 
 <script>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 import MainInfoTab from '@/components/MainInfoTab.vue';
 import LocationsTab from '@/components/LocationsTab.vue';
 import RolesTab from '@/components/RolesTab.vue';
+import { useUserStore } from '@/stores/UserStore';
 
 export default {
   components: {
@@ -80,24 +86,43 @@ export default {
     ];
     let isAllCompanies = ref();
     const currentTabIndex = ref(0);
+    let mainData = {};
+    const { updateCurrentTab, updateLocalStorage, submitDataToServer } = useUserStore();
+
+    const localData = JSON.parse(localStorage.getItem('user-settings'));
+    if (localData) {
+      mainData = localData;
+    }
 
     const handleTabClick = (goToIndex) => {
       currentTabIndex.value = goToIndex;
+      updateCurrentTab(currentTabIndex.value);
+      updateLocalStorage();
     }
     const handleOnSumbit = () => {
       if (currentTabIndex.value === 2) {
-        console.log('User Data just posted to a server!');
+        submitDataToServer();
         return;
       };
 
       currentTabIndex.value++;
+      updateCurrentTab(currentTabIndex.value);
+      updateLocalStorage();
     }
+
+    onMounted(() => {
+      if (mainData.currentTab) {
+        currentTabIndex.value = mainData.currentTab;
+      }
+    });
+
     return {
       tabs,
       currentTabIndex,
       handleTabClick,
       handleOnSumbit,
       isAllCompanies,
+      mainData
     }
   }
 }

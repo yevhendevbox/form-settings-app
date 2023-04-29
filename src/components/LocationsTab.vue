@@ -4,14 +4,12 @@
         <div class="input-field">
           <label for="main_location">Main Location <mark>*</mark></label>
           <select name="main_location" v-model="locationsInfo.mainLocation">
-            <option value="">-- Please choose a location -- </option>
-            <option value="venice">Venice Office</option>
-            <option value="us">US Office</option>
-            <option value="canada">Canada Office</option>
-            <option value="berlin">Berlin Office</option>
-            <option value="poland">Poland Office</option>
-            <option value="mexico">Mexico Office</option>
-            <option value="ukraine">Ukraine Office</option>
+            <option
+              v-for="location in locationsOptions"
+              :key="location.alias"
+              :value="location.alias"
+              :selected="locationsInfo.mainLocation"
+            >{{ location.value }}</option>
           </select>
         </div>
         <div class="input-field">
@@ -143,20 +141,42 @@ export default {
       locations: [],
     });
     const isAllChecked = ref(false);
-    const { updateData } = useUserStore();
+    const locationsOptions = [
+      { alias: '', value: '-- Please choose a location --'},
+      { alias: 'venice', value: 'Venice Office'},
+      { alias: 'us', value: 'US Office'},
+      { alias: 'canada', value: 'Canada Office'},
+      { alias: 'berlin', value: 'Berlin Office'},
+      { alias: 'poland', value: 'Poland Office'},
+      { alias: 'mexico', value: 'Mexico Office'},
+      { alias: 'ukraine', value: 'Ukraine Office'}
+    ]
+    const { updateData, updateLocalStorage } = useUserStore();
+
+    const localData = JSON.parse(localStorage.getItem('user-settings'));
+    if (localData) {
+      const { mainLocation, locations } = localData.locationsInfo;
+      locationsInfo.mainLocation = mainLocation;
+      locationsInfo.locations = locations;
+      updateData({ tab: 'locationsInfo', data: { ... locationsInfo} });
+    }
 
     const checkAll = () =>
     handleCheckAll(isAllChecked, 'data-locations', locationsInfo, 'locations');
 
     watch(
       () => ({ ... locationsInfo }),
-      () => updateData({ tab: 'locationsInfo', data: { ... locationsInfo} })
+      () => {
+        updateData({ tab: 'locationsInfo', data: { ... locationsInfo} });
+        updateLocalStorage();
+      }
     );
 
     return {
       locationsInfo,
       checkAll,
       isAllChecked,
+      locationsOptions,
     }
   }
 }
